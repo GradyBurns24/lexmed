@@ -4,15 +4,17 @@ import pytesseract
 from ollama import Client
 import pdf2image
 
-
+with open("response.txt", "w") as f:
+    f.write("erase")
 #Ollama setup
 client = Client(
     host="http://localhost:11434"
 )
 
+lex_docs = ["lex_doc-1.pdf", "lex_doc-2.pdf", "lex_doc-3.pdf", "lex_doc-4.pdf", "lex_doc-5.pdf", "lex_doc-6.pdf", "lex_doc-7.pdf", "lex_doc-8.pdf", "lex_doc-9.pdf", "lex_doc-10.pdf", "lex_doc-11.pdf",]
+cleaned_docs = []
 
-
-def ocr_space_file(filename, overlay=False, api_key='K83267503988957', language='eng'):
+def ocr_fun(filename, overlay=False, api_key='K83267503988957', language='eng'):
 
     payload = {'isOverlayRequired': overlay,
                'apikey': api_key,
@@ -29,7 +31,7 @@ def clean_text(ocr_file):
     try:
         # Query the Ollama API with the text
         prompt_text = (
-            f"Take all the metadata out of this text and return only the main content:\n\n{ocr_file}")
+            f"Extract the main content from this text. Keep only the names and what each person says. Format the output as `Name: Dialogue`. Remove metadata, comments, and other irrelevant details such as timestamps, footnotes, or non-dialogue content. Preserve the speaker's name and exact words. Here's the input text:\n\n{ocr_file}")
         response = client.generate(
             model="llama3.2",  # Replace "cleaner" with the specific model you are using
             prompt=  prompt_text
@@ -42,12 +44,12 @@ def clean_text(ocr_file):
         return f"Error during text cleaning: {str(e)}"
     
 
+for lex_doc in lex_docs:
+    ocr_file = ocr_fun(filename=lex_doc)
+    cleaned_text = clean_text(ocr_file)
+    cleaned_docs.append(cleaned_text)
 
-ocr_file = ocr_space_file(filename='lex_doc.pdf')
-cleaned_text = clean_text(ocr_file)
 
-print(cleaned_text)
-
-'''with open('response.txt', 'w') as f:
-    f.write(cleaned_text)
-    f.close'''
+for llama_docs in cleaned_docs:
+    with open('response.txt', 'a') as f: 
+        f.write(llama_docs + '\n')  
