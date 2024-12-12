@@ -17,7 +17,7 @@ def preprocess_text(text):
     return cleaned_text
 
 #Sets up the ocr scan function, got most of the code from public documentation
-def ocr_fun(filename, overlay=False, api_key='K83267503988957', language='eng'):
+def ocr_fun(filename, overlay=False, api_key='K86625846388957', language='eng'):
 
     payload = {'isOverlayRequired': overlay,
                'apikey': api_key,
